@@ -1,5 +1,7 @@
 package com.registrodevendasbackend.controller;
 
+import java.util.UUID;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,7 @@ public class ServiceController {
 		
 		var service = new Service();
 		
-		User user = userRepository.findById(serviceRecordDTO.userId()).get();
+		User user = userRepository.findById(UUID.fromString(serviceRecordDTO.userId())).get();
 		
 		BeanUtils.copyProperties(serviceRecordDTO, service);
 		
