@@ -45,7 +45,7 @@ public class ServiceController {
 		
 		BeanUtils.copyProperties(serviceRecordDTO, service);
 		
-		service.setUser(user);
+		service.setUserId(user.getId());
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(serviceRepository.save(service));
 	}
