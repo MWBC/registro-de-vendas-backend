@@ -1,5 +1,6 @@
 package com.registrodevendasbackend.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -20,7 +21,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements Serializable {
+
+	private static final long serialVersionUID = 5877873936237757465L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

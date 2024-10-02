@@ -10,12 +10,12 @@ import com.registrodevendasbackend.validator.UUIDPatternValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Constraint(validatedBy={UUIDPatternValidator.class})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UUIDPattern {
 
-    String message() default "Id de usuário inválido";
+    String message() default "Id inválido";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

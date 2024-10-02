@@ -1,5 +1,6 @@
 package com.registrodevendasbackend.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -9,13 +10,13 @@ import org.hibernate.annotations.SQLRestriction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +30,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @SQLDelete(sql = "UPDATE services SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
-public class Service {
+public class Service implements Serializable {
+
+	private static final long serialVersionUID = 9180349912252187766L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -44,8 +47,8 @@ public class Service {
 	@Column(name = "base_price")
 	private BigDecimal basePrice;
 	
-	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
 	private User user;
 	
 	@Column(name = "deleted")
@@ -57,6 +60,6 @@ public class Service {
 	@Column(name = "updated_at")
 	private Timestamp updatedAt;
 	
-	@Transient
+	@Column(name = "user_id")
 	private UUID userId;
 }
