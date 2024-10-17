@@ -1,0 +1,1 @@
+alter table users add column role_id int4, add constraint fk_role foreign key (role_id) references roles(id);
