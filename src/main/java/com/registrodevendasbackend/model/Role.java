@@ -3,9 +3,6 @@ package com.registrodevendasbackend.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.generator.Generator;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

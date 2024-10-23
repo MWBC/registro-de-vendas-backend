@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.registrodevendasbackend.DTO.ServiceRecordDTO;
@@ -25,6 +26,7 @@ import com.registrodevendasbackend.model.Service;
 import com.registrodevendasbackend.model.User;
 
 @RestController
+@RequestMapping("services")
 public class ServiceController {
 
 	@Autowired
@@ -36,7 +38,7 @@ public class ServiceController {
 	@Autowired
 	ServiceService serviceService;
 	
-	@PostMapping("/services/store")
+	@PostMapping("/store")
 	public ResponseEntity<Service> saveService(@RequestBody @Valid ServiceRecordDTO serviceRecordDTO) {
 		
 		var service = new Service();
@@ -50,7 +52,7 @@ public class ServiceController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(serviceRepository.save(service));
 	}
 	
-	@GetMapping("/services/search/{id}")
+	@GetMapping("/search/{id}")
 	public ResponseEntity<Object> getServiceById( @PathVariable(name = "id") @Valid @UUIDPattern(message = "Id de serviço inválido") String id) {
 		
 		try {
