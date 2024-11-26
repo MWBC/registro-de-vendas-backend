@@ -31,5 +31,5 @@ public class GlobalException {
         errorResponse.put("errors", errors);
         
         return errorResponse;
-    }
+    }    
 }

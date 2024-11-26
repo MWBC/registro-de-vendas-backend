@@ -11,6 +11,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.registrodevendasbackend.model.User;
 
 @Service
@@ -49,6 +50,9 @@ public class TokenService {
 					.build()
 					.verify(token)
 					.getSubject();
+		}catch(TokenExpiredException e) {
+			
+			throw e;
 		}catch(JWTVerificationException e) {
 			
 			return "";
