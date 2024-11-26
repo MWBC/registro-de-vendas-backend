@@ -56,7 +56,7 @@ public class User implements Serializable, UserDetails {
 	@Column(name = "role_id")
 	private int roleId;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "role_id", referencedColumnName = "id", insertable = false, updatable = false)
 	private Role role;
 	
