@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.registrodevendasbackend.DTO.ServiceRecordDTO;
 import com.registrodevendasbackend.custom.annotations.UUIDPattern;
+import com.registrodevendasbackend.exception.ResourceNotAvailableException;
 import com.registrodevendasbackend.repository.ServiceRepository;
 import com.registrodevendasbackend.repository.UserRepository;
 import com.registrodevendasbackend.service.ServiceService;
@@ -56,7 +57,7 @@ public class ServiceController {
 	public ResponseEntity<Object> getServiceById( @PathVariable(name = "id") @Valid @UUIDPattern(message = "Id de serviço inválido") String id) {
 		
 		try {
-						
+
 			ServiceRecordDTO serviceRecordDTO = serviceService.getServiceByIdAsServiceRecordDTO(UUID.fromString(id));
 			
 			return ResponseEntity.status(HttpStatus.OK).body(serviceRecordDTO);
@@ -64,7 +65,12 @@ public class ServiceController {
 			
 			e.printStackTrace();
 			
-			return ResponseEntity.status(401).body("Serviço não encontrado.");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Serviço não encontrado.");
+		}catch(ResourceNotAvailableException e) {
+			
+			e.printStackTrace();
+			
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}
 		
 	}

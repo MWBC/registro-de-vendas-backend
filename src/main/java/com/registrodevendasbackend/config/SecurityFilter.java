@@ -9,10 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.server.MethodNotAllowedException;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.registrodevendasbackend.DTO.AuthenticationDTO;
 import com.registrodevendasbackend.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
@@ -57,6 +55,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
 				response.getWriter().println("{\"message\": \"Token Expirado.\"}");
 			}
+		}else {
+			
+			filterChain.doFilter(request, response);
 		}
 	}
 	

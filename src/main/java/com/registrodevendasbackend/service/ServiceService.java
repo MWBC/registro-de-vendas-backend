@@ -4,10 +4,15 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.registrodevendasbackend.DTO.ServiceRecordDTO;
+import com.registrodevendasbackend.exception.ResourceNotAvailableException;
+import com.registrodevendasbackend.model.User;
 import com.registrodevendasbackend.repository.ServiceRepository;
 
 import jakarta.transaction.Transactional;
@@ -24,9 +29,22 @@ public class ServiceService {
 		return serviceRepository.findById(id).get();
 	}
 	
-	public ServiceRecordDTO getServiceByIdAsServiceRecordDTO(UUID id) {
+	public ServiceRecordDTO getServiceByIdAsServiceRecordDTO(UUID id) throws ResourceNotAvailableException {
 		
 		com.registrodevendasbackend.model.Service service = serviceRepository.findById(id).get();
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		User user = new User();
+		
+		BeanUtils.copyProperties(auth.getPrincipal(), user);
+		
+		if(!user.getId().equals(service.getUserId())) {
+						
+			throw new ResourceNotAvailableException("O usuário não possui permissão para acessar o serviço solicitado");
+			
+		}
+		
 		
 		UUID serviceId = service.getId();
 		
@@ -36,13 +54,11 @@ public class ServiceService {
 		
 		BigDecimal basePrice = service.getBasePrice();
 		
-		String userId = service.getUserId().toString();
-		
 		Timestamp createdAt = service.getCreatedAt();
 		
 		Timestamp updatedAt = service.getUpdatedAt();
 		
-		return new ServiceRecordDTO(serviceId, title, description, basePrice, userId, null, false, createdAt, updatedAt);
+		return new ServiceRecordDTO(serviceId, title, description, basePrice, null, null, false, createdAt, updatedAt);
 	}
 	
 	public ServiceRepository getServiceRepository() {
