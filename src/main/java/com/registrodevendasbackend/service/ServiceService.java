@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.registrodevendasbackend.DTO.ServiceRecordDTO;
 import com.registrodevendasbackend.exception.ResourceNotAvailableException;
+import com.registrodevendasbackend.model.Role;
 import com.registrodevendasbackend.model.User;
 import com.registrodevendasbackend.repository.ServiceRepository;
 
@@ -31,20 +32,23 @@ public class ServiceService {
 	
 	public ServiceRecordDTO getServiceByIdAsServiceRecordDTO(UUID id) throws ResourceNotAvailableException {
 		
-		com.registrodevendasbackend.model.Service service = serviceRepository.findById(id).get();
-		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 		User user = new User();
 		
 		BeanUtils.copyProperties(auth.getPrincipal(), user);
+
+		com.registrodevendasbackend.model.Service service = new com.registrodevendasbackend.model.Service();
 		
-		if(!user.getId().equals(service.getUserId())) {
-						
-			throw new ResourceNotAvailableException("O usuário não possui permissão para acessar o serviço solicitado");
+		if(user.getRoleId() == Role.ADMINISTRATOR_ID) {
+			
+			service = serviceRepository.findById(id).get();
+			
+		}else {
+			
+			service = serviceRepository.findByIdAndUserId(id, user.getId()).get();
 			
 		}
-		
 		
 		UUID serviceId = service.getId();
 		
