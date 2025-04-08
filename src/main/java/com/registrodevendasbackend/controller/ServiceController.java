@@ -1,5 +1,8 @@
 package com.registrodevendasbackend.controller;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.registrodevendasbackend.DTO.ServiceRecordDTO;
@@ -48,13 +52,17 @@ public class ServiceController {
 		
 		BeanUtils.copyProperties(serviceRecordDTO, service);
 		
+		LocalDateTime createdAt = LocalDateTime.now();
+		
 		service.setUserId(user.getId());
+		service.setCreatedAt(Timestamp.valueOf(createdAt));
+		service.setUpdatedAt(Timestamp.valueOf(createdAt));
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(serviceRepository.save(service));
 	}
 	
 	@GetMapping("/search/{id}")
-	public ResponseEntity<Object> getServiceById( @PathVariable(name = "id") @Valid @UUIDPattern(message = "Id de serviço inválido") String id) {
+	public ResponseEntity<Object> getServiceById( @PathVariable @Valid @UUIDPattern(message = "Id de serviço inválido") String id) {
 		
 		try {
 
@@ -65,7 +73,7 @@ public class ServiceController {
 			
 			e.printStackTrace();
 			
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Serviço não encontrado.");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Serviço não encontrado.");
 		}catch(ResourceNotAvailableException e) {
 			
 			e.printStackTrace();
@@ -73,5 +81,21 @@ public class ServiceController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}
 		
+	}
+	
+	@GetMapping("/search/all")
+	public ResponseEntity<Object> getServicesByUserId(@RequestParam(required = false) String title, @RequestParam(required = false) String description) {
+		
+		try {
+			
+			List<ServiceRecordDTO> filteredServices = serviceService.getFilteredServices(title, description);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(filteredServices);
+		}catch(NoSuchElementException e) {
+			
+			e.printStackTrace();
+			
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Serviço não encontrado.");
+		}
 	}
 }
