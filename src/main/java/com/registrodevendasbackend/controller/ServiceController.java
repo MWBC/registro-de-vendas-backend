@@ -10,9 +10,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -96,6 +100,66 @@ public class ServiceController {
 			e.printStackTrace();
 			
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Serviço não encontrado.");
+		}
+	}
+	
+	@PutMapping("/update")
+	public ResponseEntity<Object>updateService(@RequestBody @Valid ServiceRecordDTO serviceRecordDTO) {
+		
+		try {
+			
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			
+			User user = new User();
+			
+			BeanUtils.copyProperties(auth.getPrincipal(), user);
+			
+			LocalDateTime updatedAt = LocalDateTime.now();
+
+			Service serviceDB = serviceRepository.findByIdAndUserId(serviceRecordDTO.id(), user.getId()).get();
+			
+			serviceDB.setBasePrice(serviceRecordDTO.basePrice());
+			serviceDB.setTitle(serviceRecordDTO.title());
+			serviceDB.setDescription(serviceRecordDTO.description());
+			serviceDB.setUpdatedAt(Timestamp.valueOf(updatedAt));
+			
+			serviceRepository.save(serviceDB);
+			
+			return ResponseEntity.status(HttpStatus.CREATED).body("Serviço atualizado com sucesso.");
+		}catch(NoSuchElementException e) {
+			
+			e.printStackTrace();
+			
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Serviço não encontrado.");
+		}
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<Object> deleteService(@PathVariable @Valid @UUIDPattern(message = "Id de serviço inválido") String id) {
+		
+		try {
+			
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			
+			User user = new User();
+			
+			BeanUtils.copyProperties(auth.getPrincipal(), user);
+			
+			LocalDateTime updatedAt = LocalDateTime.now();
+			
+			Service service = serviceRepository.findByIdAndUserId(UUID.fromString(id), user.getId()).get();
+			service.setDeleted(true);
+			service.setUpdatedAt(Timestamp.valueOf(updatedAt));
+			
+			serviceRepository.save(service);
+			
+			return ResponseEntity.status(HttpStatus.CREATED).body("Serviço deletado com sucesso.");
+		}catch(NoSuchElementException e) {
+			
+			e.printStackTrace();
+			
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Serviço não encontrado.");
+	
 		}
 	}
 }
